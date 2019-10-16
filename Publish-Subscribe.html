@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<div id="d1">
+  111
+</div>
+<body>
+  <script>
+    // let d1 = document.getElementById('d1');
+    // document.body.addEventListener('click', () => {
+    //     console.log('hello world')
+    // })
+    // d1.click()
+    function myReplace(str, before, after) {
+      str.replace(before, after);
+      return str;
+    }
+    console.log(
+    myReplace("A quick brown fox jumped over the lazy dog", "jumped", "leaped"))
+        {
+      // 发布-订阅 的优点为时间上的解耦和对象之间的解耦，可以实现松耦合的代码编写
+      // 缺点是创建订阅者需要消耗一定的时间和内存，过度使用的话会使程序难以维护和理解
+      let event = {
+        clientList: {},
+        subscribe(key, fn) {
+          if(!this.clientList[key]) {
+            this.clientList[key] = [];
+          }
+          this.clientList[key].push(fn);      //订阅的消息添加进缓存列表
+        },
+        publish(type, money) {
+          let fns = this.clientList[type];
+          if (!fns || fns.legth === 0) {      //如果没有绑定对应的消息
+            return false;
+          }
+          fns.forEach(fn => {
+            fn.apply(this, [money]);
+          })
+        }
+      }
+      // 再定义一个installEvent函数，用于给所有对象动态安装发布-订阅功能
+      // 如：另一家售楼处也想要这个功能，就可以调用这个注册了，不同再写多一次这段代码
+      let installEvent = obj => {
+          for (let i in event) {
+              obj[i] = event[i]
+          }
+      };
+
+      // 给售楼处对象salesOffices动态增加发布-订阅功能
+      let salesOffices = {};
+      installEvent(salesOffices);
+      // 小明订阅信息
+      salesOffices.subscribe('squareMeter88', price => {
+          console.log('小明，你看中的88平方的房子，价格=' + price)
+      });
+      // 小光订阅信息
+      salesOffices.subscribe('squareMeter88', price => {
+          console.log('小光，你看中的88平方的房子，价格=' + price)
+      });
+      // 小红订阅信息
+      salesOffices.subscribe('squareMeter100', price => {
+          console.log('小红，你看中的100平方的房子，价格=' + price)
+      });
+      salesOffices.publish('squareMeter88', 2000000);
+      salesOffices.publish('squareMeter100', 2500000);
+    }
+
+    {
+      let pubsub = {};
+      (function(q) {
+        let topics = {},
+            subUid = -1;
+        q.publish = function( topic, args ) {
+            if ( !topics[topic] ) {
+                return false;
+            }
+            let subscribers = topics[topic],
+                len = subscribers ? subscribers.length : 0;
+            while (len--) {
+                subscribers[len].func( topic, args );
+            }
+            return this;
+        };
+        q.subscribe = function( topic, func ) {
+            if (!topics[topic]) {
+                topics[topic] = [];
+            }
+            let token = ( ++subUid ).toString();
+            topics[topic].push({
+                token: token,
+                func: func
+            });
+            return token;
+        };
+        q.unsubscribe = function( token ) {
+            for ( let m in topics ) {
+                if ( topics[m] ) {
+                    for ( let i = 0, j = topics[m].length; i < j; i++ ) {
+                        if ( topics[m][i].token === token) {
+                            topics[m].splice( i, 1 );
+                            return token;
+                        }
+                    }
+                }
+            }
+            return this;
+        };
+      }( pubsub ));
+      let messageLogger = function ( topics, data ) {
+          console.log( "Logging: " + topics + ": " + data );
+      };
+      let subscription = pubsub.subscribe( "inbox/newMessage", messageLogger );
+      pubsub.publish( "inbox/newMessage", "hello world!" );
+      pubsub.publish( "inbox/newMessage", ["test", "a", "b", "c"] );
+      pubsub.publish( "inbox/newMessage", {
+        sender: "hello@google.com",
+        body: "Hey again!"
+      });
+      pubsub.publish( "inbox/newMessage", "Hello! are you still there?" );
+    }
+    {
+      let pubsub = (() => {
+        let topics = {};
+        function subscribe(topic, fn) {
+          if(!topics[topic]){
+            topics[topic] = [];
+          }
+          topics[topic].push(fn);
+        }
+        function publish(topic, ...args) {
+          if(!topics[topic]){
+            return;
+          }
+          for(let fn of topics[topic]){
+            fn(...args);
+          }
+        }
+        return {
+          subscribe,
+          publish
+        }
+      })()
+      pubsub.subscribe('test1', function(a, b){
+        console.log(a, ':', b);
+      })
+      pubsub.publish('test1', '123', '1234');
+    }
+  </script>
+</body>
+</html>

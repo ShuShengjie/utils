@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <!-- <div id="content" style="height:150px;line-height:150px;text-align:center; color: #fff;background-color:#ccc;font-size:80px;"></div> -->
+    <script>
+        {
+            function add() {
+            // 第一次执行时，定义一个数组专门用来存储所有的参数
+            let _args = Array.from(arguments);
+            let _adder = function() {
+                // 在内部声明一个函数，利用闭包的特性保存_args并收集所有的参数值
+                _args.push(...arguments);
+                return _adder;
+            }
+            // 利用toString隐式转换的特性，当最后执行时隐式转换，并计算最终的值返回
+            _adder.toString = function() {
+                return _args.reduce((a, b) => {
+                    return a + b
+                })
+            }
+            return _adder
+            }
+            console.log(add(1)(3, 4, 5));
+        }
+        {
+            class MyPromise{
+                constructor(executor) {
+                    this.value = null;
+                    typeof executor === 'function' && executor(this.resolve.bind(this), this.reject.bind(this));
+                }
+                then(success) {
+                    console.log(this.value, 'value');
+                    const result = success(this.value);
+                    const mp = new MyPromise();
+                    mp.value = result;
+                    return mp;
+                }
+                resolve(value) {
+                    this.value = value;
+                }
+                reject(err) {
+                    this.err = err;
+                }
+            }
+            const mp1 = new MyPromise((resolve, reject) => {
+                resolve(10);
+            });
+
+            mp1.then( r => {
+                console.log('mp1 r => ', r);
+                return r + 3;
+            } ).then( r => {
+                console.log('mp2 r => ', r);
+                return r + 5;
+            } ).then( r => {
+                console.log('mp3 r => ', r);
+            } );
+        }
+    </script>
+</body>
+</html>

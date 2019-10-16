@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<body>
+  <script>
+      // 模块化模式
+      {
+        let testModule = (function() {
+          let counter = 0;
+          return {
+            increatementCounter() {
+              return counter++;
+            },
+            resetCounter() {
+              console.log('counter value prior to reset:' + counter);
+              counter = 0;
+            }
+          }
+        })();
+        console.log(testModule.increatementCounter());
+        console.log(testModule.increatementCounter());
+        testModule.resetCounter();
+      }
+
+      {
+        let basketModule = (function() {
+          let basket = [];
+          function doSomethingPrivate () {
+            console.log('doSomethingPrivate');
+          }
+          function doSomethingElsePrivate() {
+            console.log('doSomethingElsePrivate');
+          }
+          return {
+            addItem(values){
+              basket.push(values);
+              console.log(basket, 'basket');
+            },
+            getItemCount(){
+              return basket.length;
+            },
+            doSomething: doSomethingPrivate,
+            getTotal(){
+              let quantity = this.getItemCount(),
+                  totalPrice = 0;
+              while(quantity--){
+                totalPrice += basket[quantity].price;
+              }
+              return totalPrice
+            }
+          }
+        })()
+
+        basketModule.addItem({
+          item: 'bread',
+          price: 0.5
+        })
+        basketModule.addItem({
+          item: 'butter',
+          price: 0.3
+        })
+        console.log( basketModule.getItemCount() );
+        console.log( basketModule.getTotal() );
+        console.log( basketModule.basket );
+        console.log( basket );
+      }
+  </script>
+</body>
+</html>

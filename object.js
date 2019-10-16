@@ -1,41 +1,186 @@
-/*
-随机生成一个长度为 10 的整数类型的数组，例如 [2, 10, 3, 4, 5, 11, 10, 11, 20]，将其排列成一个新数组，要求新数组形式如下，例如 [[2, 3, 4, 5], [10, 11], [20]]。
-*/
+  // 对象数组转换为二维数组
+  // private objArr2ArrayTwo(objArr: any[]): string[][]{
+  //   let arrTwo: string[][] = objArr.map((obj, index) => {
+  //     return [index] = (<any>Object).values(obj);
+  //   })
+  //   return arrTwo
+  // }
+  // // private objArr2ArrayTwo(objArr: any[]): string[][]{
+  //   let arrTwo: string[][] = [];
+  //   objArr.forEach(obj => {
+  //     const newArr: string[] = (<any>Object).values(obj);
+  //     arrTwo.push(newArr);
+  //   })
+  //   return arrTwo;
+  // }
 
-// 生成范围内随机整数
-let randomNum = function(min, max) {
-  if (!max) {
-    max = min;
-    min = 0;
-  }
-  return min + (Math.floor(Math.random() * (max - min + 1)))
-}
-// 传入数组长度，随机最小值和最大值
-let randomArr = function(len,min,max) {
-  if((max-min)<len){ //可生成数的范围小于数组长度
-      return null;
-  }
-  let hash = [];
 
-  while(hash.length<len){
-    let num = randomNum(min,max);
-      
-      if(hash.indexOf(num) === -1){
-            hash.push(num);
+  /*
+    链式对象定义
+  */
+ class LazyManClass {
+  constructor(name) {
+    // this.name = name;
+    this.taskList = [];
+    this.init(name);
+  }
+  init(name) {
+    this.printLog('name', name);
+    setTimeout(() => {
+      this.next();
+    }, 0)
+  }
+  printLog(type, data) {
+    const LOG_MAP = {
+      'name': `HI, I am ${data}`,
+      'eat': `I am eating ${data}.`,
+      'sleep': `Waited for ${data} seconds.`,
+      'error': `Got something wrrong: ${data}.`
+    }
+    console.log(LOG_MAP[type]);
+  }
+  delayPromise(t) {
+    return new Promise(resolve => {
+      setTimeout(() => {
+        resolve();
+      }, t * 1000);
+    })
+  }
+  createTask(type, data) {
+    return async() => {
+      if (type === 'sleep') {
+        try{
+          await this.delayPromise(data);
+        } catch(e) {
+          this.printLog('error', e)
+        }
       }
+      this.printLog(type, data);
+      this.next();
+    }
   }
-  return hash;
+  addTask(type, data, isFirst = false) {
+    if (isFirst) {
+      this.taskList.unshift(this.createTask(type, data));
+    } else {
+      this.taskList.push(this.createTask(type, data));
+    }
+  }
+  eat(str) {
+      this.addTask('eat', str);
+      return this;
+  }
+  sleep(t) {
+      this.addTask('sleep', t);
+      return this;
+  }
+  sleepFirst(t) {
+      this.addTask('sleep', t, true);
+      return this;
+  }
+  next() {
+    if (this.taskList.length > 0) {
+      let task = this.taskList.shift();
+      task && task();
+    }
+  }
 }
-// 将数组按十位数分类
-let change2newArr = function(numArr) {
-  let newArr = Array.from(new Set(numArr)).sort((a, b) => a - b);
-  const map = new Map();
-  newArr.forEach((v) => {
-    const key = Math.floor(v / 10);
-    const group = map.get(key) || [];
-    group.push(v);
-    map.set(key, group);
+function LazyMan(name) {
+  return new LazyManClass(name);
+};
+// LazyMan('Tony').sleep(2).eat('lunch');
+// LazyMan('Tony').eat('lunch').sleep(2).eat('dinner');
+// LazyMan('Tony').eat('lunch').eat('dinner').sleepFirst(2).sleep(3).eat('junk food');
+
+/**
+ * 
+ * 冒泡排序及改进
+ */
+ function bubbleSort(arr) {
+    for (let i = 0; i < arr.length; i++) {
+      for (let j = 0; j < arr.length - i - 1; j ++) {
+        if (arr[j] > arr[j + 1]) {
+          const temp = arr[j];
+          arr[j] = arr[j + 1];
+          arr[j + 1] = temp;
+        }
+      }
+    }
+    return arr
+  }
+  console.time('maopao');
+  bubbleSort(randomArr)
+  console.timeEnd('maopao')
+
+
+  function bubbleSort1(arr) {
+    let i = arr.length - 1;
+    while(i > 0) {
+      let pos = 0;
+      for (let j = 0; j < i; j++) {
+        if (arr[j] > arr[j + 1]) {
+          pos = j;
+          const temp = arr[j];
+          arr[j] = arr[j + 1];
+          arr[j + 1] = temp
+        }
+      }
+      i = pos;
+    }
+    return arr;
+  }
+  console.time('maopao');
+  bubbleSort1(randomArr)
+  console.timeEnd('maopao')
+
+
+  /**
+   * 
+   * 
+   * 实现 (5).add(3).minus(2) 功能。
+   */
+  Number.prototype.add = function(number) {
+    return this.valueOf() + number
+  }
+  Number.prototype.minus = function(number) {
+    return this.valueOf() - number
+  }
+  console.log((5).add(1).minus(2))
+
+  /**
+   * 
+   * sleep函数
+   */
+
+
+  const sleep = (time) => {
+    return new Promise(resolve => {
+      setTimeout(resolve, time)
+    })
+  }
+  async function run() {
+    console.log('ready')
+    await sleep(1000)
+    console.log('run')
+  }
+  run();
+
+  const sleep = time => {
+  return new Promise(resolve => setTimeout(resolve,time))
+  }
+  sleep(1000).then(()=>{
+    console.log(1)
   })
-  return [...map.values()];
-}
-let newArr = change2newArr(randomArr(10, 1, 30))
+
+  /**
+   * 
+   * 
+   * 已知如下数组：
+    var arr = [ [1, 2, 2], [3, 4, 5, 5], [6, 7, 8, 9, [11, 12, [12, 13, [14] ] ] ], 10];
+    编写一个程序将数组扁平化去并除其中重复部分数据，最终得到一个升序且不重复的数组
+
+   */
+
+  let arr1 = [ [1, 2, 2], [3, 4, 5, 5], [6, 7, 8, 9, [11, 12, [12, 13, [14] ] ] ], 10];
+  let newArr1 = new Set(arr1.flat(Infinity).sort((a, b) => a - b));
+  console.log(newArr1)
