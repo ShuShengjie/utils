@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="Generator" content="EditPlus®">
+  <meta name="Author" content="">
+  <meta name="Keywords" content="">
+  <meta name="Description" content="">
+  <title>vue测试</title>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.5.22/dist/vue.js"></script>
+  <style>
+
+  </style>
+ </head>
+ <body>
+     <div id="app">
+
+        <div>
+          <child :level="level" v-change-color="color">Hello World</child>
+        </div>
+        <div id="app-extend">
+
+        </div>
+        <base-input
+        v-model="username" 
+        label="基础输入组件"
+        @click.native="handleBaseInputClick"
+        v-on:focus="handleBaseInputFocus" 
+        @change="demo" 
+        class="username-input"
+        ref="baseInput"
+        :city="city" />
+    </div>
+    <script>
+        // 注册组件
+        // 因为base-input的外层是一个label元素，所以默认情况下使用v-on:focus是无效的，所以需要配合$listeners使用，该属性可以把事件的监听指向组件中某个特定的元素
+        // 注意：如果父级的事件添加了.native修饰符，在$listeners中不会体现出来的
+        Vue.component('base-input',{
+            inheritAttrs: false,
+            props: ['label','value'],
+            template: `
+                <label id="base-label">
+                    {{label}}
+                    {{$attrs}}
+                    <input v-bind:value="value" v-bind="$attrs" ref="input" v-on="inputListeners"/>
+                </label>
+            `,
+            data: function() {
+                return {
+                  user:{
+                    firstName: 'zhang',
+                    lastName: 'zz'
+                  }
+                }
+            },
+            inject: ['foo', 'fooMethod'],
+            computed: {
+                inputListeners () {
+                    var vm = this
+                    return Object.assign({},
+                        this.$listeners,
+                        {
+                            input: function () {
+                                vm.$emit('input', event.target.value)
+                            },
+                            focus: function (event) {
+                                vm.$emit('focus', '哈哈哈，onfocus了')
+                            }
+                        }
+                    )
+                }
+            },
+            mounted: function(){
+              
+              this.$nextTick(() => {
+                this.$refs.input.focus();
+              })
+                console.log(`$attrs:`)
+                console.log(this.$attrs)
+                console.log(`$listeners:`)
+                console.log(this.$listeners) // 父级添加的所有属性都在这里
+                console.log(this.foo);
+                this.fooMethod();
+                this.$listeners.change();
+            },
+            methods: {
+                
+            }
+        })
+
+        Vue.component('child', {
+          render(h) {
+            const tag = ['div', 'p', 'strong', 'h1', 'h2', 'textarea'][this.level - 1]
+            return h(tag, this.$slots.default)
+          },
+          props: {
+            level: { type: Number, required: true }
+          }
+        })
+
+        var Profile = Vue.extend({
+          template: '<p>{{extendData}}</br>实例传入的数据为:{{propsExtend}}</p>',
+          data() {
+            return {
+              extendData: 'this is extend data'
+            }
+          },
+          props:['propsExtend']
+        })
+
+        new Profile({propsData:{propsExtend:'我是传入数据'}}).$mount('#app-extend')
+        Vue.component('Profile', Profile);
+
+        Vue.directive('change-color', function(el, binding, vnode) {
+          console.log(123)
+          el.style["color"] = binding.value;
+        })
+
+
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                username: '',
+                level: 4,
+                city:'sh',
+                color: '#f00'
+            },
+            provide:{
+              foo: 'i am foo',
+              fooMethod: () => {
+                console.log('father fooMethod is use')
+              }
+            },
+            created: function(){
+            
+            },
+            beforeUpdate: function(){
+            
+            },
+            mounted(){
+              console.log(this.$refs.baseInput.foo);
+              console.log(this.$root.$children[0].foo, '$root')
+            },
+            computed: {
+                
+            },
+            beforeUpdate: function () {
+                console.log(this.username)
+            },
+            methods: {
+                handleBaseInputFocus: function(ev){
+                    console.log(ev)
+                },
+                handleBaseInputClick: function(ev){
+                    console.log(ev.type)
+                },
+                demo() {
+                  console.log('demo')
+                }
+            }
+        })
+    </script>
+ </body>
+</html>

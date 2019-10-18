@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<body>
+  <script>
+    // 下载文件流 文件
+    private downloadFile(data: any, filename: string, fileType: string) {
+      const blob: any = new Blob([ data as any], {type: fileType});
+      if (window.navigator.msSaveOrOpenBlob) {
+          // 兼容IE10
+          navigator.msSaveBlob(blob, filename);
+        } else {
+          const a = document.createElement('a');
+          const url = URL.createObjectURL(blob);
+          a.href = url;
+          a.download = filename;
+          // 兼容火狐
+          document.body.appendChild(a);
+          a.click();
+          URL.revokeObjectURL(url);
+        }
+    }  
+  </script>
+</body>
+</html>
