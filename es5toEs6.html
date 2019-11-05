@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<body>
+  <script>
+    /*
+    es5实现map
+    */
+    // var arr = [1, 2, 3, 4];
+    // var mapArr = arr.map(item => {
+    //   return item * 2;
+    // })
+    // console.log(mapArr);
+    // Array.prototype.myMap = function(fn, context) {
+    //   var arr = Array.prototype.slice.call(this);
+    //   var mappedArr = [];
+    //   for (var i = 0; i < arr.length; i++) {
+    //     mappedArr.push(fn.call(context, arr[i], i, this));
+    //   }
+    //   return mappedArr;
+    // }
+    // var myMapArr = arr.myMap(item => item * 2);
+    // console.log(myMapArr)
+    
+    /*
+    es5实现reduce
+    */
+    var arr = [1, 2, 3, 4];
+    var sum = arr.reduce(function(prev, cur, index, arr){
+      return prev + cur
+    })
+    console.log(sum);
+    Array.prototype.myReduce = function(fn, init) {
+      var arr = Array.prototype.slice.call(this);
+      var res, startIndex;
+      res = init ? init : arr[0];
+      startIndex = init ? 0 : 1;
+      for (var i = startIndex; i < arr.length; i++) {
+        res = fn.call(null, res, arr[i], i, this)
+      }
+      return res
+    }
+    var myReduceArr = arr.myReduce(function(prev, cur){
+      return prev + cur
+    })
+    console.log(myReduceArr);
+  </script>
+</body>
+</html>
