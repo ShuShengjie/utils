@@ -211,4 +211,112 @@ Array.prototype.myMap = function(callback, thisArg) {
   return A;
 }
 let numArr = [1, 2, 3];
-console.log(numArr.myMap(item => item * 2));
+console.log(numArr.myMap(function(elem){
+  return elem * 2
+}));
+
+/**
+ * 实现数组reduce方法
+ */
+Array.prototype.myReduce = function(callback, initVal) {
+  if (this === null || this === undefined) {
+    return new TypeError('cannot read reduce of null or undefined')
+  }
+  if (Object.prototype.toString.call(callback) !== '[object Function]') {
+    return new TypeError(callback + 'is not a function')
+  }
+  let O = Object(this);
+  let len = O.length >>> 0;
+  let start = initVal;
+  let k = 0;
+  if (start === undefined) {
+    for (; k < len; k++) {
+      if (k in O) {
+        start = O[k];
+        k++;
+        break;
+      }
+    }
+    return new TypeError('array is empty')
+  }
+  for (;k < len; k++) {
+    if (k in O) {
+      start = callback.call(undefined, start, O[k], O)
+    }
+  }
+  return start;
+}
+/**
+ * 实现数组的push方法
+ */
+Array.prototype.push = function(...items) {
+  let O = Object(this);
+  let len = this.length >>> 0;
+  let argLength = items.length >>> 0;
+  if (len + argLength > 2 ** 53 - 1) {
+    return new TypeError('number is over max')
+  }
+  for (let i = 0; i < argLength; i++) {
+    O[len + i] = items[i];
+  }
+  let newLength = len + argLength;
+  O.length = newLength;
+  return newLength;
+}
+/**
+ * 实现数组pop方法
+ */
+Array.prototype.pop = function() {
+  let O = Object(this);
+  let len = this.length >>> 0;
+  if (len === 0) {
+    O.length = 0;
+    return undefined;
+  }
+  len--;
+  let value = O[len];
+  delete O[len];
+  O.length = len;
+  return value;
+}
+/**
+ * 实现数组filter方法
+ */
+Array.prototype.myFilter = function(callback, thisArg) {
+  if (this === null || this === undefined) {
+    throw new TypeError('cannot read filter of null or undefined')
+  }
+  if (Object.prototype.toString.call(callback) != "[object Function]") {
+    throw new TypeError(callback + ' is not a function')
+  }
+  let O = Object(this);
+  let len = O.length >>> 0;
+  let resLen = 0;
+  let res = [];
+  for (let i = 0; i < len; i++) {
+    if (i in O) {
+      let element = O[i];
+      if (callback.call(thisArg, O[i], i, O)) {
+        res[resLen++] = element;
+      }
+    }
+  }
+  return res;
+}
+/**
+ * 实现数组splice方法
+ */
+// Array.prototype.mySplice = function(startIndex, deleteCount, ...addElements) {
+//   let argumentsLen = arguments.length;
+//   let array = Object(this);
+//   let len = array.length;
+//   let deleteArr = new Array(deleteCount);
+//   sliceDeleteElements(array, startIndex, deleteCount, deleteArr);
+  
+// }
+// const sliceDeleteElements = (array, startIndex, deleteCount, deleteArr) => {
+//     for (let i = 0; i < deleteCount; i++) {
+//       let index = startIndex + i;
+//     }
+// }
+

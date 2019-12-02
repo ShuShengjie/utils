@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<body>
+  <script>
+    let arr = [1, 2, 3, [3, 4, 5]];
+    // console.log(type(arr))
+    let arr1 = deepClone(arr);
+    let arr2 = deepClone(arr);
+    arr1[3] = [6, 7, 8];
+    console.log(arr1, arr2)
+    console.log(arr1 === arr2);
+    console.log(arr1[3] === arr[3])
+    // 判断数据类型
+    function type(obj) {
+      let toString = Object.prototype.toString;
+      let map = {
+        '[object Boolean]': 'boolean',
+        '[object Number]': 'number',
+        '[object String]': 'string',
+        '[object Function]': 'function',
+        '[object Array]': 'array',
+        '[object Boolean]': 'boolean',
+        '[object Date]': 'date',
+        '[object RegExp]': 'regExp',
+        '[object Undefined]': 'undefined',
+        '[object Null]': 'null',
+        '[object Object]': 'object',
+      }
+      return map[toString.call(obj)]
+    }
+    // 深拷贝
+    function deepClone(data) {
+      let t = type(data), o, i, ni;
+      if (t === 'array') {
+        o = [];
+      } else if (t === 'object') {
+        o = {};
+      } else {
+        return data;
+      }
+      if (t === 'array') {
+        for (i = 0, ni = data.length; i < ni; i++) {
+          o.push(deepClone(data[i]))
+        }
+        return o;
+      } else if (t === 'object') {
+        for (i in data) {
+          o[i] = deepClone(data[i]);
+        }
+        return o;
+      }
+    }
+  </script>
+</body>
+</html>
