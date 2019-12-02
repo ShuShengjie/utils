@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <style>
+    /* 
+      外边距合并问题
+      1、给下方盒子设置定位position: absolute
+      2、给下面的盒子设置float: left
+      3、给其中任意一个盒子设置行内块元素display: inline-block
+    
+     */
+    .d1 {
+      width: 200px;
+      height: 200px;
+      background: #eee;
+      margin-bottom: 20px;
+    }
+
+    .d2 {
+      width: 200px;
+      height: 200px;
+      background: #0099ff;
+      margin-top: 20px;
+      margin-bottom: 20px;
+    }
+
+    /* 
+      css边距重叠
+      1、给父元素设置边框border: 1px solid transparent;
+      2、给父元素设置padding: 0.1px;
+      3、在子元素上方添加一个必须有宽高的兄弟元素 如.d5
+      4、给父元素设置overflow: hidden;
+      5、给子元素设置display: inline-block;（如果子元素是行内元素或者行内块元素则不会产生边距重叠问题）
+      6、给子元素设置脱离文档流如position: absolute;
+     */
+    .d5 {
+      width: 100%;
+      height: 0.1px;
+    }
+
+    .d3 {
+      width: 200px;
+      height: 200px;
+      background: #0ff;
+    }
+
+    .d4 {
+      width: 150px;
+      height: 150px;
+      background: #00f;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="d1"></div>
+  <div class="d2"></div>
+  <div class="d3">
+    <!-- <div class="d5"></div> -->
+    <div class="d4"></div>
+  </div>
+</body>
+
+</html>
